@@ -30,16 +30,16 @@ func (u *userUsecase) CreateUser(ctx context.Context, request request.CreateUser
 		Email:    request.Email,
 		Password: hashPassword,
 	})
-	//send email
-	go u.cfg.GoMail().SendEmail(ctx, thirdparty.SendEmailRequest{
-		To:      user.Email,
-		Body:    "Berikut ini adalah OTP Anda " + request.Password,
-		Subject: "Selamat Datang di Senja Labs",
-	})
-
 	if err != nil {
 		return nil, err
 	}
+
+	//send email
+	go u.cfg.GoMail().SendEmail(ctx, thirdparty.SendEmailRequest{
+		To:      user.Email,
+		Body:    "Berikut ini password anda " + request.Password,
+		Subject: "Selamat Datang di Senja Labs",
+	})
 
 	return user, nil
 }

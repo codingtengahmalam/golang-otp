@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"golang-otp/config"
 	"golang-otp/src/model"
 )
@@ -16,12 +15,6 @@ func NewUserRepository(cfg config.Config) model.UserRepository {
 }
 
 func (u *userRepository) Create(ctx context.Context, user *model.User) (*model.User, error) {
-
-	email, _ := u.FindByEmail(ctx, user.Email)
-	if email != nil {
-		return nil, errors.New("email invalid")
-	}
-
 	if err := u.Cfg.Database().
 		WithContext(ctx).
 		Create(&user).Error; err != nil {
