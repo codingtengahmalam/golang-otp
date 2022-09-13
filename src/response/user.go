@@ -1,7 +1,7 @@
 package response
 
 type GetOtpResponse struct {
-	Otp int `json:"otp"`
+	Otp string `json:"otp"`
 }
 
 type LoginWithOtpResponse struct {

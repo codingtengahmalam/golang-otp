@@ -1,4 +1,4 @@
-package helper
+package token
 
 import (
 	"encoding/json"
@@ -9,25 +9,25 @@ import (
 )
 
 type (
-	TokenResponse struct {
+	NewTokenResponse struct {
 		AccessToken string `json:"access_token"`
 		TokenType   string `json:"token_type"`
 		ExpiredAt   int64  `json:"expired_at"`
 	}
 
-	TokenRequest struct {
-		UserID    string `json:"user_id"`
+	NewTokenRequest struct {
+		UserID    int    `json:"user_id"`
 		UserEmail string `json:"user_email"`
 	}
 
 	customClaims struct {
-		UserID    string `json:"user_id"`
+		UserID    int    `json:"user_id"`
 		UserEmail string `json:"user_email"`
 		jwt.StandardClaims
 	}
 
-	TokenData struct {
-		UserID    string `json:"user_id"`
+	NewTokenData struct {
+		UserID    int    `json:"user_id"`
 		UserEmail string `json:"user_email"`
 	}
 )
@@ -40,7 +40,7 @@ const TypeShortSecretKey = 2
 var LongSecretKey = os.Getenv("LONG_TOKEN_SECRET")
 var shortSecretKey = os.Getenv("SHORT_TOKEN_SECRET")
 
-func NewCustomToken(request TokenRequest, duration time.Duration) (*TokenResponse, error) {
+func NewCustomToken(request NewTokenRequest, duration time.Duration) (*NewTokenResponse, error) {
 	var secretKey string
 
 	claims := &customClaims{
@@ -65,14 +65,14 @@ func NewCustomToken(request TokenRequest, duration time.Duration) (*TokenRespons
 		return nil, err
 	}
 
-	return &TokenResponse{
+	return &NewTokenResponse{
 		AccessToken: tokenString,
 		TokenType:   "bearer",
 		ExpiredAt:   claims.ExpiresAt,
 	}, nil
 }
 
-func ExtractToken(token string, tokenType int) (*TokenData, error) {
+func ExtractToken(token string, tokenType int) (*NewTokenData, error) {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		switch tokenType {
 		case TypeLongSecretKey:
@@ -94,7 +94,7 @@ func ExtractToken(token string, tokenType int) (*TokenData, error) {
 			return nil, err
 		}
 
-		extract := new(TokenData)
+		extract := new(NewTokenData)
 		if err := json.Unmarshal(jsonBody, extract); err != nil {
 			return nil, err
 		}

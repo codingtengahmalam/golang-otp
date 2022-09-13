@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/go-redis/redis/v8"
 	"os"
 	"time"
@@ -29,12 +28,7 @@ type Redis interface {
 }
 
 func (c *redisClient) Set(ctx context.Context, key string, value interface{}) error {
-	jsonData, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	err = c.rdb.Set(ctx, key, jsonData, 10*time.Minute).Err()
+	err := c.rdb.Set(ctx, key, value, 10*time.Minute).Err()
 	return err
 }
 

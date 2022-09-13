@@ -2,8 +2,8 @@ package model
 
 import (
 	"context"
+	"golang-otp/helper/token"
 	"golang-otp/src/request"
-	"golang-otp/src/response"
 	"time"
 )
 
@@ -24,5 +24,5 @@ type UserRepository interface {
 type UserUsecase interface {
 	RequestOtp(ctx context.Context, request request.GetOtpRequest) error
 	CreateUser(ctx context.Context, request request.CreateUserRequest) (*User, error)
-	LoginWithOTP(ctx context.Context, request request.LoginWithOTPRequest) (*response.LoginWithOtpResponse, error)
+	LoginWithOTP(ctx context.Context, request request.LoginWithOTPRequest) (*token.NewTokenResponse, error)
 }

@@ -13,6 +13,6 @@ type (
 
 	LoginWithOTPRequest struct {
 		Email string `json:"email" validate:"required"`
-		Otp   int    `json:"otp" validate:"required"`
+		Otp   string `json:"otp" validate:"required"`
 	}
 )
