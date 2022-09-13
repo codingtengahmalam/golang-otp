@@ -31,6 +31,17 @@ func InitServer(cfg config.Config) Server {
 	e.Validator = &validator.GoPlaygroundValidator{
 		Validator: validatorEngine.New(),
 	}
+
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		report, ok := err.(*echo.HTTPError)
+		if !ok {
+			report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+
+		c.Logger().Error(report)
+		c.JSON(report.Code, report)
+	}
+
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
