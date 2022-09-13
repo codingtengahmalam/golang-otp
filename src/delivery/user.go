@@ -50,8 +50,23 @@ func (p *userDelivery) requestOtpHandler(c echo.Context) error {
 }
 
 func (p *userDelivery) loginHandler(c echo.Context) error {
-	//TODO implement me
-	panic("implement me")
+	ctx := c.Request().Context()
+	var req request.LoginWithOTPRequest
+	if err := c.Bind(&req); err != nil {
+		return err
+	}
+
+	otp, err := p.userUsecase.LoginWithOTP(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "success",
+		"code":   http.StatusOK,
+		"data":   otp,
+	})
+
 }
 
 func (p *userDelivery) registerHandler(c echo.Context) error {

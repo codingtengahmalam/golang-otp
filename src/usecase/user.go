@@ -2,11 +2,12 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"golang-otp/config"
 	"golang-otp/helper"
+	"golang-otp/helper/token"
 	"golang-otp/src/model"
 	"golang-otp/src/request"
-	"golang-otp/src/response"
 	"golang-otp/thirdparty"
 )
 
@@ -51,7 +52,7 @@ func (u *userUsecase) RequestOtp(ctx context.Context, request request.GetOtpRequ
 		return err
 	}
 
-	otp := helper.RandNumeric(5)
+	otp := helper.RandNumeric()
 	cacheKey := "otp:" + user.Email
 	err = u.cfg.Redis().Set(ctx, cacheKey, otp)
 	if err != nil {
@@ -69,7 +70,27 @@ func (u *userUsecase) RequestOtp(ctx context.Context, request request.GetOtpRequ
 
 }
 
-func (u *userUsecase) LoginWithOTP(ctx context.Context, request request.LoginWithOTPRequest) (*response.LoginWithOtpResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *userUsecase) LoginWithOTP(ctx context.Context, request request.LoginWithOTPRequest) (*token.NewTokenResponse, error) {
+	cacheKey := "otp:" + request.Email
+
+	otpValue, _ := u.cfg.Redis().Get(ctx, cacheKey)
+
+	if request.Otp != otpValue {
+		return nil, errors.New("otp is not valid")
+	}
+
+	user, err := u.userRepo.FindByEmail(ctx, request.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := token.NewCustomToken(token.NewTokenRequest{
+		UserID:    user.ID,
+		UserEmail: user.Email,
+	}, token.DurationShort)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
 }
