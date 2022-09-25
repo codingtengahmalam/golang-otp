@@ -1,3 +1,3 @@
 # golang-otp
 
-Penjelasan: https://youtu.be/Lgwipk2cUnE
+Penjelasan: https://www.youtube.com/watch?v=XPuzRbm_ONc
